@@ -65,6 +65,15 @@
   height: 100px;         /* logo ki height adjust karo */
   width: auto;
 }
+    section, .review-section, .benefits, .video-section {
+  padding: 40px 5%; /* flexible padding */
+}
+
+    @media (max-width: 480px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1rem; }
+  .feature-card { font-size: 0.9rem; padding: 15px; }
+}
 
     .join-popup {
   position: fixed;
@@ -75,6 +84,14 @@
   justify-content: center;
   align-items: center;
   z-index:2000;
+}
+    .join-popup-content, .login-content {
+  max-width: 90%;
+  padding: 30px;
+}
+
+textarea, input {
+  width: 100%;
 }
 
 .join-popup-content {
@@ -98,6 +115,27 @@
   box-shadow:0 8px 25px rgba(255,110,196,0.5);
 }
 
+    .features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.hero {
+  background-size: cover; 
+  background-position: center;
+}
+
+.logo-wrap .logo {
+  height: auto;
+  max-height: 80px; /* desktop ke liye */
+  width: auto;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+}
 
   /* Hero Section */
     .hero {
@@ -915,5 +953,6 @@ document.addEventListener("DOMContentLoaded", updateVotes);
 
 </body>
 </html>
+
 
 
