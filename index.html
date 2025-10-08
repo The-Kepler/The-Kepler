@@ -1,0 +1,917 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Kepler | AI + AR Fashion SuperApp</title>
+  <link rel="icon" type="image/png" href="logo.png.png" />
+  <link rel="apple-touch-icon" href="logo.png.png">
+
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <!-- Firebase App (core SDK) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+  // Your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyC27lchOHLRWi4abFJyRvKrKth-_kofi6M",
+    authDomain: "the-kepler-dfabf.firebaseapp.com",
+    projectId: "the-kepler-dfabf",
+    storageBucket: "the-kepler-dfabf.appspot.com",
+    messagingSenderId: "103308794739",
+    appId: "1:103308794739:web:a17c2b4c2ca99415d74306"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Make db accessible globally
+  window.db = db;
+  window.addDoc = addDoc;
+  window.collection = collection;
+  window.query = query;
+  window.orderBy = orderBy;
+  window.onSnapshot = onSnapshot;
+</script>
+
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #0a0a0f;
+      color: white;
+      overflow-x: hidden;
+    }
+
+.site-header {
+  position: absolute;      /* page scroll par bhi upar rahe */
+  top: 15px;
+  left: 0;
+  width: 100%;
+  padding: 1px ;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+  background: rgba(10, 10, 15, 0.243); /* thoda transparent background */
+}
+
+.logo-wrap .logo {
+  height: 100px;         /* logo ki height adjust karo */
+  width: auto;
+}
+
+    .join-popup {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(10,10,20,0.85);
+  backdrop-filter: blur(8px);
+  justify-content: center;
+  align-items: center;
+  z-index:2000;
+}
+
+.join-popup-content {
+  background: rgba(30,30,50,0.9);
+  padding:40px 30px;
+  border-radius:20px;
+  text-align:center;
+  max-width:450px;
+  width:90%;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+  animation: popupZoom 0.5s ease-out;
+}
+
+@keyframes popupZoom {
+  from {transform: scale(0.7); opacity:0;}
+  to {transform: scale(1); opacity:1;}
+}
+
+.join-popup-content button:hover {
+  transform: scale(1.05);
+  box-shadow:0 8px 25px rgba(255,110,196,0.5);
+}
+
+
+  /* Hero Section */
+    .hero {
+      height: 100vh;
+      background: url('https://cdn.pixabay.com/photo/2020/07/30/09/53/fashion-5451259_1280.jpg') no-repeat center center/cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+    }
+
+    h1 {
+      font-size: 3.8rem;
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      z-index: 2;
+      margin-bottom: -0.5rem;
+    }
+
+    h2 {
+      font-weight: 500;
+      color: #b0b0b0;
+      z-index: 2;
+      margin-bottom: -0.5rem;
+    }
+    
+    .waitlist-btn {
+      background: linear-gradient(90deg, #0072ff, #00c6ff);
+      border: none;
+      border-radius: 30px;
+      padding: 15px 40px;
+      color: white;
+      font-size: 1.2rem;
+      margin-top: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+      z-index: 2;
+    }
+
+    .waitlist-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Suggestion Box already exists, adding review box style */
+.review-section {
+  padding: 60px 10%;
+  background: #101018;
+  text-align: center;
+  border-radius: 15px;
+  margin-top: 40px;
+}
+
+.review-section h2 {
+  margin-bottom: 30px;
+  color: #00c6ff;
+  font-size: 2rem;
+}
+
+.review-list {
+  list-style: none;
+  padding: 0;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.review-item {
+  background: rgba(255, 255, 255, 0.05);
+  margin-bottom: 20px;
+  padding: 15px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.review-item span {
+  font-weight: 500;
+  color: #fff;
+  min-width: 180px;
+  text-align: left;
+}
+
+.review-bar-container {
+  background: rgba(255,255,255,0.1);
+  flex: 1;
+  height: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-right: 10px;
+}
+
+.review-bar {
+  background: linear-gradient(90deg, #0072ff, #00c6ff);
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+
+.review-percent {
+  font-weight: 600;
+  color: #00c6ff;
+  min-width: 35px;
+  text-align: right;
+}
+
+   /* Suggestion & Vote Box */
+    .suggestion-section, .vote-section {
+      padding: 60px 10%;
+      background: #101018;
+      text-align: center;
+    }
+
+    .suggestion-section h2, .vote-section h2 {
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      max-width: 600px;
+      height: 100px;
+      padding: 15px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      resize: none;
+      background: rgba(255, 255, 255, 0.07);
+      color: white;
+    }
+
+    .suggestion-section button {
+      margin-top: 15px;
+      background: linear-gradient(90deg, #0072ff, #00c6ff);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .suggestion-section button:hover {
+      transform: scale(1.05);
+    }
+
+    .vote-list {
+      list-style: none;
+      padding: 0;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .vote-item {
+      background: rgba(255, 255, 255, 0.07);
+      padding: 15px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .vote-item button {
+      background: linear-gradient(90deg, #0072ff, #00c6ff);
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .vote-item button:hover {
+      transform: scale(1.1);
+    }
+
+    /* Benefits */
+    .benefits {
+      background: linear-gradient(90deg, #0072ff, #00c6ff);
+      border-radius: 15px;
+      padding: 40px;
+      color: #fff;
+      margin-top: 60px;
+      text-align: left;
+    }
+
+    .benefits h3 {
+      text-align: center;
+    }
+
+    /* Video Teaser */
+    .video-section {
+      text-align: center;
+      padding: 70px 10%;
+      background: #101018;
+    }
+
+    h5 {
+        font-weight: 500;
+    }
+
+    video {
+      width: 90%;
+      max-width: 800px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    /* Social */
+    .social-section {
+      background: rgba(0,0,0,0.8);
+      padding: 60px 10%;
+      text-align: center;
+    }
+
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 15px;
+    }
+
+    .social-icons img {
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .social-icons img:hover {
+      transform: scale(1.2);
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="hero">
+    <div class="overlay"></div>
+    <h1>THE KEPLER</h1>
+    <h2>Where AI, Fashion & Reality Collide </h2>
+    <p>India’s first AI + AR fashion superapp. Try full outfits virtually, shop exclusive local boutiques, and own your digital wardrobe.<br> Join the future of fashion Orbit — powered by AI & AR. Early members get lifetime benefits.</p>
+    <button class="waitlist-btn">Join the Waitlist</button>
+  </div>
+
+  <section class="section">
+  <!-- Normal Features -->
+  <div class="category">
+    <h2>✨ Normal Features</h2>
+    <div class="features">
+      <div class="feature-card">Curated daily outfit feed</div>
+      <div class="feature-card">Community likes, shares & comments</div>
+      <div class="feature-card">Simple wardrobe management</div>
+      <div class="feature-card">Personalized style tips</div>
+      <div class="feature-card">Wishlist for future looks</div>
+    </div>
+  </div>
+
+  <!-- Medium Features -->
+  <div class="category">
+    <h2>⚡ Medium Features</h2>
+    <div class="features">
+      <div class="feature-card">AI stylist with budget + personality match</div>
+      <div class="feature-card">Influencer-inspired style fusion</div>
+      <div class="feature-card">Group shopping + friend polls</div>
+      <div class="feature-card">Seasonal outfit suggestions</div>
+      <div class="feature-card">Mix & match wardrobe planner</div>
+    </div>
+  </div>
+
+  <!-- Rare & Unique Features -->
+  <div class="category">
+    <h2>🚀 Rare & Unique Features</h2>
+    <div class="features">
+      <div class="feature-card">AR Full-Outfit Try-On (complete look simulation)</div>
+      <div class="feature-card">Hyperlocal stores + instant AR offers</div>
+      <div class="feature-card">Digital Closet & Outfit NFTs (resale + metaverse)</div>
+      <div class="feature-card">Gamified fashion streaks, badges & coins</div>
+      <div class="feature-card">Celebrity style replication AI</div>
+      <div class="feature-card">Virtual influencer fashion hub</div>
+    </div>
+  </div>
+</section>
+
+<style>
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+
+.category h2 {
+  margin-bottom: 30px; /* existing spacing */
+  margin-top: 19px;   /* text ko upar le jaane ke liye */
+}
+
+.category h2 {
+  text-align: center;   /* heading center me */
+  margin-top: -10px;    /* upar le jaane ke liye, adjust karo -5px ya -15px */
+  margin-bottom: 30px;  /* heading ke niche spacing */
+}
+
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 15px;
+  padding: 25px;
+  transition: 0.1s, box-shadow 0.1s;
+  position: relative;
+  overflow: hidden;
+  font-weight: 500;
+  font-size: 1.05rem;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(120deg, rgba(0,198,255,0.2), rgba(0,114,255,0.2));
+  transform: rotate(45deg);
+  transition: all 0.1s ease;
+  z-index: 0;
+}
+
+.feature-card:hover::before {
+  top: -25%;
+  left: -25%;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 40px rgba(0, 198, 255, 0.3);
+  z-index: 1;
+}
+
+.feature-card {
+  z-index: 1;
+  position: relative;
+}
+</style>
+
+
+ <div class="benefits">
+      <h3>🔥 Why Join The Waitlist?</h3>
+      <ul>
+        <li>✅ Get early access to beta & lifetime rewards</li>
+        <li>✅ Earn Kepler Coins for every outfit shared</li>
+        <li>✅ Appear as Founding Member inside app</li>
+        <li>✅ Unlock limited AR wardrobe NFTs</li>
+      </ul>
+      <p>Already <strong>20,000+ fashion lovers</strong> joined! Your orbit awaits.</p>
+    </div>
+  </section>
+
+  <!-- Suggestion & Review Section -->
+<div class="suggestion-section">
+  <h2>💡 Suggest a Feature</h2>
+  <textarea placeholder="What cool feature would you love to see in Kepler?"></textarea><br>
+  <button>Submit Suggestion</button>
+  
+
+</div>
+
+<div class="review-section">
+  <h2>📝 Feature Reviews From Users</h2>
+  <ul class="review-list">
+    <li class="review-item">
+      <span>AR Full-Outfit Try-On</span>
+      <div class="review-bar-container">
+        <div class="review-bar" style="width: 80%;"></div>
+      </div>
+      <span class="review-percent">80%</span>
+    </li>
+    <li class="review-item">
+      <span>Celebrity Style in Your Budget</span>
+      <div class="review-bar-container">
+        <div class="review-bar" style="width: 65%;"></div>
+      </div>
+      <span class="review-percent">65%</span>
+    </li>
+    <li class="review-item">
+      <span>Digital Closet & Outfit NFTs</span>
+      <div class="review-bar-container">
+        <div class="review-bar" style="width: 75%;"></div>
+      </div>
+      <span class="review-percent">75%</span>
+    </li>
+    <li class="review-item">
+      <span>AI Stylist with Budget Match</span>
+      <div class="review-bar-container">
+        <div class="review-bar" style="width: 70%;"></div>
+      </div>
+      <span class="review-percent">70%</span>
+    </li>
+  </ul>
+</div>
+
+
+  <!-- ✅ JOIN SUCCESS POPUP SECTION -->
+<div id="joinPopup" class="join-popup" style="display:flex;">
+  <div class="join-popup-content">
+    <h2 style="background: linear-gradient(90deg,#ff6ec4,#7873f5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size:28px; margin-bottom:10px; font-weight:800;">
+      Welcome to The Kepler Orbit!
+    </h2>
+    <p style="color:#ddd; font-size:16px; margin-bottom:20px;">
+      Enter the AI + AR stylist fashion world — discover exclusive looks, digital wardrobes, and influencer-inspired outfits.
+    </p>
+    <button onclick="closePopup()" style="background: linear-gradient(90deg,#ff6ec4,#7873f5); color:#fff; border:none; padding:12px 28px; border-radius:25px; font-size:16px; font-weight:700; cursor:pointer; box-shadow:0 6px 20px rgba(120,115,245,0.4); transition:0.3s;">
+      Explore Now
+    </button>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="logo-wrap">
+    <img src="Screenshot 2025-10-05 165956.png" alt="The Kepler Logo" class="logo">
+  </div>
+</header>
+
+<div class="video-section">
+    <h2>🎬 Watch the Future of Fashion</h2>
+    <h5>The Kepler — AI + AR Powered Fashion Superapp Where Your Style Orbits Innovation, Celebrity-Inspired Outfits, Trendsetting, and Exclusive Digital Wardrobes </h5>
+    <video autoplay muted loop playsinline>
+      <source src="https://cdn.pixabay.com/vimeo/379439271/fashion-26592.mp4?width=1280&hash=407a69c00fcbff4b0cd6d56eaef9f5355dce9b52" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div class="social-section">
+    <h2>Follow The Kepler Movement</h2>
+    <div class="social-icons">
+      <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Instagram" />
+      <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" />
+      <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube" />
+    </div>
+    <p>#TheKepler #FashionFuture #JoinKepler #TheKeplerIsComing #KeplerOnTrend
+</p>
+  </div>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.utils.toArray('.feature-card').forEach((card, i) => {
+      gsap.from(card, {
+        scrollTrigger: { trigger: card, start: 'top 80%' },
+        opacity: 0,
+        y: 40,
+        duration: 0.6,
+        delay: i * 0.1,
+      });
+    });
+
+    gsap.from('.benefits', {
+      scrollTrigger: { trigger: '.benefits', start: 'top 80%' },
+      opacity: 0,
+      scale: 0.9,
+      duration: 1,
+      ease: 'power2.out',
+    });
+
+    gsap.from('.video-section video', {
+      scrollTrigger: { trigger: '.video-section', start: 'top 85%' },
+      opacity: 0,
+      y: 50,
+      duration: 1,
+    });
+
+    function vote(button) {
+      let current = parseInt(button.textContent.replace('❤️', '').trim());
+      button.textContent = `❤️ ${current + 1}`;
+    }
+
+    function joinWaitlist(event) {
+  event.preventDefault();
+  document.getElementById("joinPopup").style.display = "flex";
+}
+
+function closePopup() {
+  document.getElementById("joinPopup").style.display = "none";
+}
+  </script>
+
+<!-- ✅ LOGIN POPUP SECTION -->
+<div id="loginModal" class="login-modal" style="display: none;">
+  <div class="login-content">
+    <span class="close" onclick="closeLogin()">&times;</span>
+    <h2>Welcome to <span style="color:#00c6ff;">The Kepler</span></h2>
+    <p>Join to reserve your exclusive spot.</p>
+    <input type="name" placeholder="Name" required>
+    <input type="email" placeholder="Email" required>
+    <button class="login-btn">Join</button>
+    
+</script>
+
+    <p class="no-account">The Kepler — AI + AR powered Stylist fashion superapp <a href="#"></a></p>
+  </div>
+</div>
+
+<style>
+  .login-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .login-content {
+    background: #111827;
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    color: white;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    animation: fadeIn 0.4s ease;
+  }
+  .login-content h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  .login-content p {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 15px;
+  }
+  .login-content input {
+    width: 85%;
+    padding: 12px;
+    margin-bottom: 15px;
+    background: #1f2937;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+  }
+  .login-content input:focus {
+    outline: 1px solid #00c6ff;
+  }
+  .login-btn {
+    background: linear-gradient(90deg,#0072ff,#00c6ff);
+    color: white;
+    padding: 12px 0;
+    width: 90%;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .login-btn:hover { background: #0072ff; }
+  .close {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+  }
+  .close:hover { color: #00c6ff; }
+  .no-account a {
+    color: #00c6ff;
+    text-decoration: none;
+  }
+  .no-account a:hover { text-decoration: underline; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<script>
+  const joinBtn = document.querySelector(".waitlist-btn");
+  const loginModal = document.getElementById("loginModal");
+
+  joinBtn.addEventListener("click", function() {
+    loginModal.style.display = "flex";
+  });
+
+  function closeLogin() {
+    loginModal.style.display = "none";
+  }
+
+  window.onclick = function(e) {
+    if (e.target === loginModal) {
+      loginModal.style.display = "none";
+    }
+  }
+
+  function closePopup() {
+  document.getElementById("joinPopup").style.display = "none";
+}
+
+const suggestBtn = document.querySelector('.suggestion-section button');
+
+suggestBtn.addEventListener('click', async () => {
+  const suggestionInput = document.querySelector('.suggestion-section textarea');
+  const suggestion = suggestionInput.value.trim();
+
+  if (!suggestion) return alert("❌ Enter a suggestion!");
+
+  try {
+    await addDoc(collection(db, "suggestions"), {
+      text: suggestion,
+      createdAt: new Date()
+    });
+
+    alert("💡 Suggestion submitted!");
+    suggestionInput.value = '';
+  } catch (err) {
+    console.error(err);
+    alert("❌ Could not submit suggestion.");
+  }
+});
+
+const joinButton = document.querySelector('.login-btn');
+
+joinButton.addEventListener('click', async () => {
+  const name = document.querySelector('input[placeholder="Name"]').value.trim();
+  const email = document.querySelector('input[placeholder="Email"]').value.trim();
+
+  if (!name || !email) return alert("❌ Name & Email required!");
+
+  try {
+    await addDoc(collection(db, "waitlist"), {
+      name,
+      email,
+      joinedAt: new Date()
+    });
+
+    alert("✅ Added to waitlist!");
+    document.querySelector('input[placeholder="Name"]').value = '';
+    document.querySelector('input[placeholder="Email"]').value = '';
+
+    closeLogin();
+    document.getElementById("joinPopup").style.display = "flex"; // Show thank-you popup
+  } catch (err) {
+    console.error(err);
+    alert("❌ Could not join waitlist.");
+  }
+});
+
+const reviewList = document.querySelector('.review-list');
+const suggestionsQuery = query(collection(db, "suggestions"), orderBy("createdAt", "desc"));
+
+onSnapshot(suggestionsQuery, snapshot => {
+  reviewList.innerHTML = ''; // Clear old list
+  snapshot.forEach(doc => {
+    const li = document.createElement('li');
+    li.className = "review-item";
+    li.innerHTML = `
+      <span>${doc.data().text}</span>
+      <div class="review-bar-container">
+        <div class="review-bar" style="width: 50%;"></div>
+      </div>
+      <span class="review-percent">50%</span>
+    `;
+    reviewList.appendChild(li);
+  });
+});
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC27lchOHLRWi4abFJyRvKrKth-_kofi6M",
+  authDomain: "the-kepler-dfabf.firebaseapp.com",
+  projectId: "the-kepler-dfabf",
+  storageBucket: "the-kepler-dfabf.firebasestorage.app",
+  messagingSenderId: "103308794739",
+  appId: "1:103308794739:web:a17c2b4c2ca99415d74306"
+};
+
+function updateVotes() {
+  const items = document.querySelectorAll(".vote-item");
+  let total = 0;
+
+  // First calculate total votes
+  items.forEach(item => {
+    total += Number(item.dataset.votes) || 0;
+  });
+
+  // Update each item
+  items.forEach(item => {
+    const votes = Number(item.dataset.votes) || 0;
+    const percent = total ? Math.round((votes / total) * 100) : 0;
+    item.querySelector(".vote-bar").style.width = percent + "%";
+    item.querySelector(".vote-percentage").textContent = percent + "%";
+  });
+
+  // Update total votes display
+  document.getElementById("totalVotes").textContent = total;
+}
+
+// Function to handle vote click
+function vote(button) {
+  const item = button.closest(".vote-item");
+  const currentVotes = Number(item.dataset.votes) || 0;
+  item.dataset.votes = currentVotes + 1; // Increment vote
+  updateVotes();
+}
+
+// Make sure update runs after DOM fully loaded
+document.addEventListener("DOMContentLoaded", updateVotes);
+
+let hasVoted = false; // Track if user has already voted
+
+function updateVotes() {
+  const items = document.querySelectorAll(".vote-item");
+  let total = 0;
+
+  // Calculate total votes
+  items.forEach(item => {
+    total += Number(item.dataset.votes) || 0;
+  });
+
+  // Update each item
+  items.forEach(item => {
+    const votes = Number(item.dataset.votes) || 0;
+    const percent = total ? Math.round((votes / total) * 100) : 0;
+    item.querySelector(".vote-bar").style.width = percent + "%";
+    item.querySelector(".vote-percentage").textContent = percent + "%";
+  });
+
+  // Update total votes display
+  document.getElementById("totalVotes").textContent = total;
+}
+
+function vote(button) {
+  if (hasVoted) return; // Stop if already voted
+
+  const item = button.closest(".vote-item");
+  const currentVotes = Number(item.dataset.votes) || 0;
+  item.dataset.votes = currentVotes + 1;
+
+  button.textContent = "Voted"; // Change button text
+  button.disabled = true;       // Disable button after vote
+  hasVoted = true;
+
+  updateVotes();
+}
+
+document.addEventListener("DOMContentLoaded", updateVotes);
+
+</script>  
+
+<!-- Firebase SDK + Join Waitlist -->
+<script type="module">
+  // 1️⃣ Import Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+  // 2️⃣ Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyC27lchOHLRWi4abFJyRvKrKth-_kofi6M",
+    authDomain: "the-kepler-dfabf.firebaseapp.com",
+    projectId: "the-kepler-dfabf",
+    storageBucket: "the-kepler-dfabf.appspot.com",
+    messagingSenderId: "103308794739",
+    appId: "1:103308794739:web:a17c2b4c2ca99415d74306"
+  };
+
+  // 3️⃣ Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // 4️⃣ Join Waitlist Button
+  const joinButton = document.querySelector('.login-btn');
+
+  joinButton.addEventListener('click', async () => {
+    const name = document.querySelector('input[placeholder="Name"]').value.trim();
+    const email = document.querySelector('input[placeholder="Email"]').value.trim();
+
+    if (!name || !email) return alert("❌ Name & Email required!");
+
+    try {
+      await addDoc(collection(db, "waitlist"), {
+        name,
+        email,
+        joinedAt: new Date()
+      });
+
+      alert("✅ Added to waitlist!");
+      document.querySelector('input[placeholder="Name"]').value = '';
+      document.querySelector('input[placeholder="Email"]').value = '';
+
+      // Close modal and show popup
+      document.getElementById("loginModal").style.display = "none";
+      document.getElementById("joinPopup").style.display = "flex";
+    } catch (err) {
+      console.error(err);
+      alert("❌ Could not join waitlist. Check console for errors.");
+    }
+  });
+</script>
+
+
+</body>
+</html>
